@@ -1,2 +1,7 @@
 plugins:
   - jekyll-redirect-from
+redirect_from:
+  - /StructureCCloner/Build
+  - /StructureCCloner/Home
+    - /StructureCCloner/Scan
+      - /StructureCCloner/Config
