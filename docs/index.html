@@ -2,19 +2,36 @@
 <html>
     <head>
         <meta charset="utf-8">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
         <style>
             body {
                 background-color: #1E1E1E;
                 color: white;
+                font-family: 'Poppins', sans-serif;
             }
         </style>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     </head>
     <body>
-        <title>Redirecting...</title>
-        <p><b>StructureCCloner</b></p>
-        <p>A simple way to clone a 3D zone and rebuild it anywhere using Minecraft ComputerCraft:Tweaked mod</p>
+        <div id="wiki-content"></div>
 
-        <p><i>Redirecting to <a href="https://github.com/hzFishy/StructureCCloner/wiki">github.com/hzFishy/StructureCCloner/wiki</a></i></p>
-        <!DOCTYPE html>
+        <script>
+            $(document).ready(function() {
+                // Get the current page name from the URL
+                var pageName = window.location.pathname.split('/').pop();
+    
+                // Fetch the raw content of the GitHub Wiki page
+                $.get('https://raw.githubusercontent.com/wiki/hzfishy/StructureCCloner/' + pageName + '.md', function(data) {
+                    // Convert the markdown content to HTML
+                    var converter = new showdown.Converter();
+                    var htmlContent = converter.makeHtml(data);
+    
+                    // Render the content on the page
+                    $('#wiki-content').html(htmlContent);
+                });
+            });
+        </script>
     </body>
 </html>
