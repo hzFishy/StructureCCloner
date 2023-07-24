@@ -3,5 +3,5 @@ plugins:
 redirect_from:
   - /StructureCCloner/Build
   - /StructureCCloner/Home
-    - /StructureCCloner/Scan
-      - /StructureCCloner/Config
+  - /StructureCCloner/Scan
+  - /StructureCCloner/Config
