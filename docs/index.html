@@ -22,10 +22,14 @@
 
         <img src="https://github.com/hzFishy/StructureCCloner/blob/96086b330fc6c032c78c3ab99d18fde97436b7b6/_wiki/assets/BannerLogo.png?raw=true" alt="Image Banner">
         <script>
+            const queryString = window.location.search;
+
             function getParameterValue(parameterName) {
-                const params = new URLSearchParams(queryString);
-                return params.get(parameterName);
+            const params = new URLSearchParams(queryString);
+            const paramValues = params.getAll(parameterName);
+            return paramValues.length > 0 ? paramValues[0] : null;
             }
+            
             const rValue = getParameterValue('r');
 
             var targetUrl = "https://github.com/hzFishy/StructureCCloner/wiki/" + rValue;
