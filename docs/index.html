@@ -29,11 +29,13 @@
             const paramValues = params.getAll(parameterName);
             return paramValues.length > 0 ? paramValues[0] : null;
             }
-            
+
             const rValue = getParameterValue('r');
 
             var targetUrl = "https://github.com/hzFishy/StructureCCloner/wiki/" + rValue;
-            window.location.href = targetUrl;
+            console.log(rValue);
+            console.log(targetUrl);
+            //window.location.href = targetUrl;
             
         </script>
         
