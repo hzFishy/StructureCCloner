@@ -22,9 +22,15 @@
 
         <img src="https://github.com/hzFishy/StructureCCloner/blob/96086b330fc6c032c78c3ab99d18fde97436b7b6/_wiki/assets/BannerLogo.png?raw=true" alt="Image Banner">
         <script>
-            var currentUrl = window.location.href;
-            var targetUrl = currentUrl.replace("ccloner.madefor.cc", "github.com/hzFishy/StructureCCloner/wiki");
+            function getParameterValue(parameterName) {
+                const params = new URLSearchParams(queryString);
+                return params.get(parameterName);
+            }
+            const rValue = getParameterValue('r');
+
+            var targetUrl = "https://github.com/hzFishy/StructureCCloner/wiki/" + rValue;
             window.location.href = targetUrl;
+            
         </script>
         
     </body>
