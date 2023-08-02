@@ -8,11 +8,9 @@ A simple way to clone a 3D zone and rebuild it anywhere using Minecraft Computer
 ![GitHub commit activity (branch)](https://img.shields.io/github/commit-activity/t/hzFishy/StructureCCloner?label=Total%20commits)
 
 ---
-# Main features
-- Custom size
-- Highly customisable
-- Multiple modes and submodes
-- Fast and easy file upload and transfer between StructureCCloner web storage, pastebin or any custom source
+# See [Main features](Home#main-features)
+# See [demos & screenshots](demos-&-screens)
+# See [Wiki](https://github.com/hzFishy/StructureCCloner/wiki)
 
 ---
 
