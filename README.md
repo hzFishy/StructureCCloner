@@ -18,6 +18,7 @@ A simple way to clone a 3D zone and rebuild it anywhere using Minecraft Computer
 
 - [Follow the project](https://github.com/users/hzFishy/projects/8)
 
+- See [releases](https://github.com/hzFishy/StructureCCloner/releases) and branchs for source code
 ---
 ![Logo Banner](https://github.com/hzFishy/StructureCCloner/blob/3d998e2cae3267d50e2ebff64fe29e2a595f01be/_wiki/assets/BannerLogo2.png)
 > Logos made by `dartsgame` *(Discord)*
