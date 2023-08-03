@@ -52,7 +52,7 @@ for _, path in ipairs(dirs) do
   end
 end
 
-
+print("")
 print("=== Starting instalation ===")
 parallel.waitForAll(table.unpack(tasks))
 
