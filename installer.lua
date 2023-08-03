@@ -45,7 +45,7 @@ end
 print("=== Starting instalation ===")
 parallel.waitForAll(table.unpack(tasks))
 
-local termm = require "StructureCCloner.modules.term"
+local termm = require "/StructureCCloner.modules.term"
 local completion = require "cc.completion"
 
 termm.changeColor(colors.red)
