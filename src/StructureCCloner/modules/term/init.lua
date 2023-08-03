@@ -23,7 +23,7 @@ local function errorr(message)
     resetColor()
 end
 local function askInput()
-    Term.resetColor()
+    resetColor()
     write("> ")
 end
 local function press2Continue(text)
@@ -55,7 +55,7 @@ local function splitWrite(tbltext,tblcolors,skipline)
     if skipline then
         print()
     end
-    Term.resetColor()
+    resetColor()
 end
 
 
