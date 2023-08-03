@@ -48,8 +48,7 @@ for i, path in ipairs(files) do
 end
 for _, path in ipairs(dirs) do
   tasks[#tasks+1] = function()
-    print(path)
-    fs.makeDir(path)
+  fs.makeDir(path)
     end
 end
 
