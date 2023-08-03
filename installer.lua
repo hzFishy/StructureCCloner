@@ -17,51 +17,17 @@ local dirs = {
   "StructureCCloner/userData"
 }
 
-
-local starttext = "downloading "
+local text = "downloading "
 local endtext = "/"..#files
+
 local function init()
-  print(starttext.."0"..endtext)
+  print(text.."0"..endtext)
 end
 local x,y = term.getCursorPos()
 init()
 local function update(i)
     term.setCursorPos(x,y)
-    print(starttext..i..endtext)
-end
-
-local function ternary(condition, value_if_true, value_if_false)
-  if condition then
-      return value_if_true
-  else
-      return value_if_false
-  end
-end
-local function resetColor()
-  term.setTextColor(colors.white)
-end
-local function changeColor(v)
-  term.setTextColor(v)
-end
-local function splitWrite(tbltext,tblcolors,skipline)
-  skipline = ternary(skipline == nil, true, skipline)
-  for i, text in ipairs(tbltext) do
-      local color = tblcolors[i]
-      if color then
-          changeColor(color)
-      else
-          changeColor(colors.white)
-      end
-      write(text)
-  end
-  if skipline then
-      print()
-  end
-  resetColor()
-end
-local function askInput()
-  Term.resetColor()
-  write("> ")
+    print(text..i..endtext)
 end
 
 
@@ -90,27 +56,27 @@ end
 print("=== Starting instalation ===")
 parallel.waitForAll(table.unpack(tasks))
 
-
+local termm = require "/StructureCCloner.modules.term"
 local completion = require "cc.completion"
 
-changeColor(colors.red)
+termm.changeColor(colors.red)
 shell.run("set motd.enable false")
-changeColor(colors.orange)
+termm.changeColor(colors.orange)
 print("Disabled motd, do 'set motd.enable true' to set back to enable")
 
 
 io.open("StructureCCloner.lua", "w"):write('shell.run("StructureCCloner/init.lua")'):close()
 print("StructureCCloner successfully installed!")
-splitWrite({"Run ","/StructureCCloner.lua"," to start."},{nil,colors.blue,nil})
+termm.splitWrite({"Run ","/StructureCCloner.lua"," to start."},{nil,colors.blue,nil},true)
 
 
-changeColor(colors.orange)
+termm.changeColor(colors.orange)
 print("Create a startup file for StructureCCloner ?")
-askInput()
+termm.askInput()
 local ans = select(1,(string.gsub(read(nil, {}, function(text) return completion.choice(text, {"yes","no"}) end)," ","")))
 if ans == "yes" then
     io.open("startup.lua", "w"):write('shell.run("StructureCCloner.lua")'):close()
 end
 
-changeColor(colors.green)
+termm.changeColor(colors.green)
 print("=== Instalation complete ===")
