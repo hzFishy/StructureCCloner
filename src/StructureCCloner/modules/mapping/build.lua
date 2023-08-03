@@ -481,11 +481,10 @@ end
 
 --[[ Build ]]
 -- Executed a each new block
-local function perBlockScanAction(x,y,z)
+local function perBlockScanAction(x,y,z,backwards)
     Utils.logtoFile(selffilename,"perBlockScanAction","("..x..", "..y..", "..z..")","")
     cZ = cZ + 1
-    print(cLayer,cLine,cZ)
-    local id = fixNamesId(layers[cLayer][cLine][cZ])
+    local id = fixNamesId(layers[cLayer][cLine][Utils.ternary(backwards,width-cZ+1,cZ)])
     local block = names[id]
     if block then -- skip if "air")
         local blockSlot = inventory.getBlock(block.id)
@@ -562,7 +561,7 @@ local function init()
         startvector = input.vectorgetInput("Start")
         Term.press2Continue()
         initVariables()
-        Depend.DH_sendmsg("# Build mode initialized with: \nFile: `"..selectedFileName.."`\n**Blocks summary:**\n```lua\n"..presummary().."\n```")
+        Depend.DH_sendmsg("# Build mode initialized with: \n __Begin coordinate:__ `"..startvector:tostring().."` \nFile: `"..selectedFileName.."`\n**Blocks summary:**\n```lua\n"..presummary().."\n```")
         Term.clear()
         local function subcheck()
             Term.changeColor(colors.orange)
