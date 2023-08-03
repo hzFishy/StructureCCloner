@@ -48,15 +48,16 @@ for i, path in ipairs(files) do
 end
 for _, path in ipairs(dirs) do
   tasks[#tasks+1] = function()
-  fs.makeDir(path)
-    end
+    fs.makeDir(path)
+  end
 end
 
 
 print("=== Starting instalation ===")
 parallel.waitForAll(table.unpack(tasks))
 
-local termm = require "StructureCCloner.modules.term"
+local termm = require "/StructureCCloner.modules.term"
+Utils = require "/StructureCCloner.modules.utils"
 local completion = require "cc.completion"
 
 termm.changeColor(colors.red)
