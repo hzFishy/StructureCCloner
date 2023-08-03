@@ -42,7 +42,7 @@ end
 
 --[ Write ]--
 local function splitWrite(tbltext,tblcolors,skipline)
-    if Utils then skipline = Utils.ternary(skipline == nil, true, skipline) end
+    if Utils ~= nil then skipline = Utils.ternary(skipline == nil, true, skipline) end
     for i, text in ipairs(tbltext) do
         local color = tblcolors[i]
         if color then
