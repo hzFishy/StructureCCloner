@@ -514,6 +514,7 @@ local function startBuilding()
     cLayer = 0
     cLine = 0
     cZ = 0
+    movement.goTo(startvector:add(vector.new(0,1,-1))) -- prevent from being blocked
     movement.checkAllVolume(startvector,endvector,1,perBlockScanAction,actionPerLayer,actionPerLine,actionPerFinishLine)
 
     Term.changeColor(colors.green)
