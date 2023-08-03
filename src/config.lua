@@ -1,55 +1,55 @@
 local config = {
-    noLogging = false,
-    detailedLogging = true,
+    noLogging = true,
+    detailedLogging = false,
 
     turtle = {
         initposition = vector.new(
-            -2,
-            4,
-            -1
+            0,
+            0,
+            0
         ),
         initfacing = "x",
     },
 
     scan = {
         placeholderBlockIfEmpty = "minecraft:air",
-        scanfilepreffix = "hzFishy",
+        scanfilepreffix = "GuestUser",
         autoupload = false,
         removeMCNamespace = true,
         showIndexs = false,
         fuelSlots = {1,2,3},
         fuelChest =  vector.new(
-            -1,
-            4,
-            -3
+            0,
+            0,
+            0
         ),
-        dropoff = true,
+        dropoff = false,
         dropoffChest = vector.new(
-            1,
-            4,
-            -3
+            0,
+            0,
+            0
         )
     },
 
     build = {
         fuelSlots = {1,2,3},
         fuelChest =  vector.new(
-            -1,
-            4,
-            -3
+            0,
+            0,
+            0
         ),
         ressourceChestModem = vector.new(
-            3,
-            4,
-            -3
+            0,
+            0,
+            0
         ),
         ressourceChestType = "minecraft:chest"
     },
 
     dependencies = {
         DiscordHook = {
-            enable = true,
-            webhook = "https://discord.com/api/webhooks/1132792570343338126/6CAMVpe3DGeZbPB-oBB5F7pIbcHSwJtJ6pceerKGzu1Cq0rz0xvWYefDIWbStUDizzsy"
+            enable = false,
+            webhook = ""
         }
     }
 }
