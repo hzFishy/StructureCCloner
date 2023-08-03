@@ -18,6 +18,18 @@ local dirs = {
   "StructureCCloner/userData"
 }
 
+local text = "downloading "
+local endtext = "/"..#files
+
+local function init()
+  print(text.."0"..endtext)
+end
+local x,y = term.getCursorPos()
+init()
+local function update(i)
+    term.setCursorPos(x,y)
+    print(text..i..endtext)
+end
 
 local url = "https://raw.githubusercontent.com/hzFishy/StructureCCloner/main/src/"
 local tasks = {}
@@ -26,7 +38,7 @@ for i, path in ipairs(files) do
     local req, err = http.get(url.. path)
     if not req then error("Failed to download " .. url..path .. ": " .. err, 0) end
 
-    print(path)
+    update(i)
     local file = fs.open(path, "w")
     file.write(req.readAll())
     file.close()
@@ -45,7 +57,7 @@ end
 print("=== Starting instalation ===")
 parallel.waitForAll(table.unpack(tasks))
 
-local termm = require "/StructureCCloner.modules.term"
+local termm = require "StructureCCloner.modules.term"
 local completion = require "cc.completion"
 
 termm.changeColor(colors.red)
