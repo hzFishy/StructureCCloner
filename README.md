@@ -13,7 +13,7 @@ https://github.com/hzFishy/StructureCCloner/assets/84443782/6b64f7c3-3960-4920-b
 
 
 # See [Main features](Home#main-features)
-# See [demos & screenshots](demos-&-screens)
+# See [demos & screenshots](Demos-&-Screens)
 # See [Wiki](https://github.com/hzFishy/StructureCCloner/wiki)
 # See [Installation](Guide#install)
 ---
