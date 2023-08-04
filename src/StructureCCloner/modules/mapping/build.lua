@@ -510,7 +510,6 @@ local function startBuilding()
     Depend.DH_sendmsg("# Starting building")
 
     getBlocks()
-    print("===== volume")
     cLayer = 0
     cLine = 0
     cZ = 0
