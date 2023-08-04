@@ -1,5 +1,5 @@
 ![](https://img.shields.io/badge/Files:-11-blue)
-![](https://img.shields.io/badge/Total%20line%20count:-2391-red)
+![](https://img.shields.io/badge/Total%20lines%20count:-2391-red)
 ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/hzFishy/StructureCCloner?label=Code%20size)
 ![GitHub commit activity (branch)](https://img.shields.io/github/commit-activity/t/hzFishy/StructureCCloner?label=Total%20commits)
 ---
