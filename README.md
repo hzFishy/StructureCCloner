@@ -12,10 +12,10 @@ A simple way to clone a 3D zone and rebuild it anywhere using Minecraft Computer
 https://github.com/hzFishy/StructureCCloner/assets/84443782/6b64f7c3-3960-4920-b142-025e61853420
 
 
-# See [Main features](Home#main-features)
-# See [demos & screenshots](Demos-&-Screens)
+# See [Main features](https://github.com/hzFishy/StructureCCloner/wiki/Home#main-features)
+# See [demos & screenshots](https://github.com/hzFishy/StructureCCloner/wiki/Demos-&-Screens)
 # See [Wiki](https://github.com/hzFishy/StructureCCloner/wiki)
-# See [Installation](Guide#install)
+# See [Installation](https://github.com/hzFishy/StructureCCloner/wiki/Guide#install)
 ---
 - [Wiki](https://github.com/hzFishy/StructureCCloner/wiki)
 
