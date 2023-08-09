@@ -2,10 +2,12 @@ local input = require "modules.utils.input"
 local movement = require "modules.movement"
 local inventory = require "modules.inventory"
 local build = require "modules.building"
+local pretty = require "modules.term.pretty"
 local selffilename = "mapping/build"
 
 local mappingDir = "StructureCCloner/userData/"
 local selectedFileName
+local selectedSubMode
 
 local startvector
 local endvector
@@ -13,12 +15,15 @@ local filedata
 local layers
 local names
 local ressourceChestModem = Config.build.ressourceChestModem
+local replace_patterns = Config.build.replace_patterns
+local ignored_blocks = Config.build.ignored_blocks
 
 local length
 local height
 local width
 
 local firstIndexRemoved = false
+local extraRemovedIndexs = 0
 
 local cLayer = 1
 local cLine = 1
@@ -284,8 +289,8 @@ local function getFile()
                 end
             elseif selectedWebMethod == "pastebin" then
                 local filename
-                local function checkCreateFile(filename)
-                    return fs.exists(filename)
+                local function checkCreateFile(filenamee)
+                    return fs.exists(filenamee)
                 end
                 local function getPastebin()
                     Term.changeColor(colors.orange)
@@ -350,7 +355,7 @@ local function getFile()
         end
     end
     method()
-
+    Term.clear()
     Term.changeColor(colors.blue)
     print("If you want to rename your selected file:")
     Term.resetColor()
@@ -390,30 +395,36 @@ local function presummary()
     print("List of block you will need: ")
     Term.resetColor()
     names = filedata.names
-    local block_count = {}
+    --local block_count = {}
+    if names[1].id == "air" then
+        table.remove(names,1)
+        firstIndexRemoved = true
+    end
     for _, blocktbl in ipairs(names) do
         --block_count[blocktbl.id] = blocktbl.count
         Term.splitWrite({blocktbl.id," ",blocktbl.count},{colors.lightBlue,nil,colors.blue})        
     end
 
-    if names[1].id == "air" then
-        table.remove(names,1)
-        firstIndexRemoved = true
-    end
     Utils.logtoFile(selffilename,"presummary",nil,textutils.serialise(names),true)
-    return textutils.serialise(names)
-end
 
+    if #names < 1 then
+        Term.errorr("None")
+        return "None"
+    else
+        return textutils.serialise(names)
+    end
+
+end
 
 --[[ Utils ]]--
 local function fixNamesId(id)
+    local oldid = id
     if firstIndexRemoved then
-        Utils.logtoFile(selffilename,"fixNamesId","(id: "..id..")","returned: "..id-1,true)
-        return id-1
-    else
-        Utils.logtoFile(selffilename,"fixNamesId","(id: "..id..")","returned: "..id,true)
-        return id
+        id = id-1
     end
+    id = id-extraRemovedIndexs
+    Utils.logtoFile(selffilename,"fixNamesId","(id: "..oldid..")","returned: "..id,true)
+    return id
 end
 
 
@@ -486,6 +497,7 @@ local function perBlockScanAction(x,y,z,backwards)
     cZ = cZ + 1
     local id = fixNamesId(layers[cLayer][cLine][Utils.ternary(backwards,width-cZ+1,cZ)])
     local block = names[id]
+    -- the selectedSubMode isnt check since there is only one submode
     if block then -- skip if "air")
         local blockSlot = inventory.getBlock(block.id)
         while not blockSlot do
@@ -506,17 +518,35 @@ local function startBuilding()
     local startT = Utils.C_ElapsedTime.new()
     Utils.logtoFile(selffilename,"startBuilding","(startvector: "..startvector:tostring()..")","")
     Term.changeColor(colors.green)
-    print("Starting building")
-    Depend.DH_sendmsg("# Starting building")
+    print("Started building")
+    Depend.DH_sendmsg("# Started building")
 
     getBlocks()
-    print("===== volume")
     cLayer = 0
     cLine = 0
     cZ = 0
-    movement.goTo(startvector:add(vector.new(0,1,-1))) -- prevent from being blocked
-    movement.checkAllVolume(startvector,endvector,1,perBlockScanAction,actionPerLayer,actionPerLine,actionPerFinishLine)
+    Term.resetColor()
+    print("Progress:")
+    pretty.initBar(colors.green,colors.red)
+    Depend.DH_sendmsg("**Progress:**")
+    local _,msgid = Depend.DH_initBar(0)
+    local function updatebars(p)
+        pretty.updateBar(p)
+        Depend.DH_updateBar(p,msgid)
+    end
 
+    movement.goTo(startvector:add(vector.new(0,1,-1))) -- prevent from being blocked
+    movement.checkAllVolume(
+        updatebars,
+        startvector,
+        endvector,
+        1,
+        perBlockScanAction,
+        actionPerLayer,
+        actionPerLine,
+        actionPerFinishLine)
+
+    updatebars(100)
     Term.changeColor(colors.green)
     print("Finished building")
     Depend.DH_sendmsg("# Finished building \n In `"..(Utils.formatTime((startT:getElapsedTime()/1000))).."`")
@@ -531,6 +561,29 @@ local function initVariables()
     layers = filedata.chunks[1].layers
     names = filedata.names
 
+    --use ignored_blocks (if any)
+    if #ignored_blocks > 0 then
+        for _, value in ipairs(ignored_blocks) do
+            for i, valuenames in ipairs(names) do
+                local t = inventory.addMCNameSpace(valuenames.id)
+                if value == t then
+                    table.remove(names,i)
+                    extraRemovedIndexs = extraRemovedIndexs + 1
+                end
+            end
+        end
+    end
+
+    if #replace_patterns > 0 then
+        for _, valuerepa in ipairs(replace_patterns) do
+            for _, valuenames in ipairs(names) do
+                local t = inventory.addMCNameSpace(valuenames.id)
+                if t == valuerepa[1] then
+                    valuenames.id = inventory.removeMCNameSpace(valuerepa[2])
+                end
+            end
+        end
+    end
     height = #layers
     length = #layers[1]
     width = #layers[1][1]
@@ -561,8 +614,46 @@ local function init()
 
         startvector = input.vectorgetInput("Start")
         Term.press2Continue()
+
+        local allsubModes = {
+            Default = "Do nothing special, can be stuck if inside the build zone there is blocks"
+        }
+        local submodenames = {}
+        Term.clear()
+        local selected = false
+        while not selected do
+            Term.changeColor(colors.orange)
+            print("Select a submode from the list below:")
+            print("=======")
+
+            for k, value in pairs(allsubModes) do
+                table.insert(submodenames, k)
+                Term.splitWrite({"- ",k," | Desc: ",value},{colors.lightGray,colors.purple,colors.lightGray,colors.lightBlue})
+            end
+
+            Term.changeColor(colors.orange)
+            print("=======")
+            Term.askInput()
+
+            local ans = select(1,(string.gsub(read(nil, {}, function(text) return Completion.choice(text, submodenames) end)," ","")))
+
+            for _, value in pairs(submodenames) do
+                if value == ans then
+                    term.clear()
+                    Term.resetCursor()
+                    Term.changeColor(colors.green)
+                    selectedSubMode = value
+                    selected = true
+                end
+            end
+            if not selected then
+                Term.clear()
+                Term.changeColor(colors.red)
+                print("Please enter an existing Module")
+            end
+        end
         initVariables()
-        Depend.DH_sendmsg("# Build mode initialized with: \n __Begin coordinate:__ `"..startvector:tostring().."` \nFile: `"..selectedFileName.."`\n**Blocks summary:**\n```lua\n"..presummary().."\n```")
+        Depend.DH_sendmsg("# Build mode initialized with: \n __Submode:__ `"..selectedSubMode.."` \n __Begin coordinate:__ `"..startvector:tostring().."` \nFile: `"..selectedFileName.."`\n**Blocks summary:**\n```lua\n"..presummary().."\n```")
         Term.clear()
         local function subcheck()
             Term.changeColor(colors.orange)
@@ -570,6 +661,8 @@ local function init()
 
             local checktable = initCheckRessources()
             if #checktable == 0 then
+                Term.splitWrite({"Starting scan with ",selectedSubMode," submode in 1 second"},{nil,colors.orange,nil})
+                sleep(1)
                 startBuilding()
             else
                 Term.errorr("Blocks are missing")

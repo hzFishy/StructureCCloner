@@ -7,6 +7,7 @@ local spawnCoordsVector
 local spawnFacingValue
 local lastCoordsVector
 local lastFacingValue
+local FacingOrder
 
 local dropoff = Config.scan.dropoff
 local dropoffChest = Config.scan.dropoffChest
@@ -32,6 +33,11 @@ for k, v in pairs(turtle) do
             return try
         end
     end
+end
+
+
+local function getFacingOrder()
+    return FacingOrder
 end
 
 
@@ -536,31 +542,29 @@ local function goToSpawn()
     Utils.logtoFile(selffilename,"goToSpawn",nil," arrived after "..startT:getElapsedTime().." milliseconds")
 end
 -- for scanning, the turtle goes to all blocks given in a volume
-local function checkAllVolume(startVector, endVector,chunkIndex,callbackPerBlockAction,callbackPerLayerAction,callbackPerZLineAction,callbackPerFinishZLineAction)
+local function checkAllVolume(callbackprogressupdate,startVector, endVector,chunkIndex,callbackPerBlockAction,callbackPerLayerAction,callbackPerZLineAction,callbackPerFinishZLineAction)
     local startT = Utils.C_ElapsedTime.new()
     Utils.logtoFile(selffilename,"checkAllVolume()",nil,"starting")
     local yIndex = 1
     for y = startVector.y, endVector.y do
+
         if callbackPerLayerAction then
             callbackPerLayerAction(chunkIndex,yIndex)
         end
-        local FacingOrder = "front"
+        FacingOrder = "front"
         local xIndex = 1
         for x = startVector.x, endVector.x do
             if callbackPerZLineAction then
                 callbackPerZLineAction(xIndex)
             end
-            --local zIndex = 0
             if FacingOrder == "front" then
                 for z = startVector.z, endVector.z do
                     callbackPerBlockAction(x,y,z,false)
-                    --zIndex = zIndex + 1
                 end
                 FacingOrder = "back"
             else
                 for z = endVector.z, startVector.z, -1 do
                     callbackPerBlockAction(x,y,z,true)
-                    --zIndex = zIndex + 1
                 end
                 FacingOrder = "front"
             end
@@ -569,6 +573,7 @@ local function checkAllVolume(startVector, endVector,chunkIndex,callbackPerBlock
             end
             xIndex = xIndex+1
         end
+        callbackprogressupdate(((y-(startVector.y-1))/(endVector.y-(startVector.y-1))) * 100)
         yIndex = yIndex+1
     end
     Utils.logtoFile(selffilename,"checkAllVolume()",nil,"finished in "..startT:getElapsedTime().." milliseconds")
@@ -583,6 +588,7 @@ return {
     setneedTodropoffChest = setneedTodropoffChest,
     dropoff = dropoff,
     estimate = estimate,
+    getFacingOrder = getFacingOrder,
 
     goTo = goTo,
     --canMoveTo = canMoveTo,

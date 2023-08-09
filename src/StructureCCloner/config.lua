@@ -28,7 +28,11 @@ local config = {
             0,
             0,
             0
-        )
+        ),
+        replace_patterns = {
+        },
+        ignored_blocks = {
+        }
     },
 
     build = {
@@ -43,7 +47,11 @@ local config = {
             0,
             0
         ),
-        ressourceChestType = "minecraft:chest"
+        ressourceChestType = "minecraft:chest",
+        replace_patterns = {
+        },
+        ignored_blocks = {
+        }
     },
 
     dependencies = {

@@ -1,6 +1,7 @@
 local movement = require "modules.movement"
 local inventory = require "modules.inventory"
 local input = require "modules.utils.input"
+local pretty = require "modules.term.pretty"
 local selffilename = "mapping/scan"
 
 local mappingDir = "StructureCCloner/userData/"
@@ -22,7 +23,8 @@ local placeholderBlockIfEmpty = Config.scan.placeholderBlockIfEmpty
 local upload = Config.scan.autoupload
 local removeMCNamespace = Config.scan.removeMCNamespace
 local showIndexs = Config.scan.showIndexs
-
+local replace_patterns = Config.scan.replace_patterns
+local ignored_blocks = Config.scan.ignored_blocks
 
 -- convert int to string for layer/chunk indexing
 local function convertIndex(int)
@@ -129,9 +131,38 @@ local function perFinishZLineAction(chunkIndex,layerIndex)
     layerIndex = convertIndex(layerIndex)
     scanOutput_SaveZLine(chunkIndex,layerIndex)
 end
+
+--use ignored_blocks (if any)
+local function IgnoredBlockCheck(block)
+    if #ignored_blocks < 1 then
+        return block
+    end
+    for _, value in ipairs(ignored_blocks) do
+        if value == block then
+            return "minecraft:air"
+        end
+    end
+    return block
+end
+
+-- use replace_patterns (if any)
+local function replaceWithPatterns(block)
+    if #replace_patterns < 1 then
+        return block
+    end
+    for _, value in ipairs(replace_patterns) do
+        if value[1] == block then
+            return value[2]
+        end
+    end
+    return block
+end
+
 -- add item (or block) to 'names' table
 local function addBlock(block,setempty)
     setempty = Utils.ternary(setempty == nil, false, setempty)
+    block = IgnoredBlockCheck(block)
+    block = replaceWithPatterns(block)
     Utils.logtoFile(selffilename,"addBlock","( item: "..block.." setempty: "..(Utils.tern4Bool(setempty))..")","")
     local function lookupify_ids(tbl)
         local lookup = {}
@@ -176,7 +207,7 @@ local function perBlockScanAction(x,y,z,backwards)
     end
 
     if selectedSubMode == "Full" then
-        movement.goTo(vector.new(x,y,z),true,true,save)
+        movement.goTo(vector.new(x,y,z),movement.getFacingOrder() == "back",true,save)
     end
 end
 
@@ -273,12 +304,23 @@ local function startScanning()
     local startT = Utils.C_ElapsedTime.new()
     Utils.logtoFile(selffilename,"===startScanning===",nil," starting scanning")
     Term.changeColor(colors.orange)
-    print("**Scanning...**")
-    Depend.DH_sendmsg("Scanning...")
+    print("Started scanning")
+    Depend.DH_sendmsg("# Started scanning")
+    Term.resetColor()
+    print("Progress:")
+    pretty.initBar(colors.green,colors.red)
+    Depend.DH_sendmsg("**Progress:**")
+    local _,msgid = Depend.DH_initBar(0)
+    local function updatebars(p)
+        pretty.updateBar(p)
+        Depend.DH_updateBar(p,msgid)
+    end
+
     movement.goTo(vector_start:add(vector.new(0,0,-1)))
     for chunkIndex, value in ipairs(chunks) do -- for each chunk go to bottom left corner TO top right corner
         scanOutput_NewChunk(chunkIndex)
         movement.checkAllVolume(
+            updatebars,
             value.start,
             value.finish,
             chunkIndex,
@@ -287,6 +329,7 @@ local function startScanning()
             perZLineAction,
             perFinishZLineAction)
     end
+    updatebars(100)
     Utils.logtoFile(selffilename,"startScanning",nil," scan finished in "..startT:getElapsedTime().." milliseconds")
     Term.changeColor(colors.green)
     print("Finished Scanning")
@@ -326,10 +369,6 @@ local function init()
     print("[[ Gathering User Input ]]")
     Utils.logtoFile(selffilename,"scanInit",nil,"Gathering user input")
 
-    Term.errorr("IMPORTANT!")
-    Term.errorr("As mentioned in the github issue 'kown limitations' the total number of lines (z axis) has to be EVEN (2,4,6,...)")
-    Term.errorr("MORE INFO IN THE ISSUE")
-    Term.press2Continue()
     local input_vector_start = input.vectorgetInput("Start")
     local input_vector_end = input.vectorgetInput("End")
 
@@ -385,9 +424,9 @@ local function init()
         end
     end
 
-    Term.splitWrite({"Starting scan with ",selectedSubMode," submode in 3 seconds"},{nil,colors.orange,nil})
+    Term.splitWrite({"Starting scan with ",selectedSubMode," submode in 1 second"},{nil,colors.orange,nil})
 
-    sleep(3)
+    sleep(1)
     Utils.logtoFile(selffilename,"scanInit",nil,"finished with: (selectedSubMode: "..selectedSubMode.."), now initializing and starting scan")
     initScan(input_vector_start,input_vector_end,customfilename)
     startScanning()

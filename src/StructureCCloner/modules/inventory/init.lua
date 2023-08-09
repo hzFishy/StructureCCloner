@@ -4,7 +4,8 @@ local fuelSlots
 local fuelChest
 local blockSlots = {}
 local fuelItems = {
-    "minecraft:coal"
+    "minecraft:coal",
+    "minecraft:charcoal"
 }
 local modem
 
@@ -16,6 +17,10 @@ local ressourceChestType = Config.build.ressourceChestType
 
 
 --[[ Utils ]]--
+local function removeMCNameSpace(str)
+    return string.gsub(str,"minecraft:","")
+end
+
 local function addMCNameSpace(str)
     if not string.find(str,":") then
         str = "minecraft:"..str
@@ -29,6 +34,12 @@ end
 
 
 --[ Inventory Global ]--
+local function turtlemakelist()
+    local slots = {}
+    local function ree(i) return function() slots[i] = turtle.getItemDetail(i) end end
+    parallel.waitForAll(ree(1),ree(2),ree(3),ree(4),ree(5),ree(6),ree(7),ree(8),ree(9),ree(10),ree(11),ree(12),ree(13),ree(14),ree(15),ree(16))
+    return slots
+end
 -- sucks stacks in the inventory under of the turtle
 local function suckX(stacks)
     for _ = 1, stacks do
@@ -37,10 +48,14 @@ local function suckX(stacks)
 end
 -- drops  in the inventory under of the turtle
 local function drop()
-    for _,slot in ipairs(blockSlots) do
-        turtle.select(slot)
-        currentSelectedSlot = slot
-        turtle.dropDown()
+    for i,details in pairs(turtlemakelist()) do
+        if i >= blockSlots[1] then
+            if details.count > 0 then
+                turtle.select(i)
+                currentSelectedSlot = i
+                turtle.dropDown()
+            end
+        end
     end
 end
 
@@ -277,9 +292,8 @@ local function checkItemsCount(missing)
         Term.errorr("No '"..ressourceChestType.."' connected to modem")
         Term.manualretry()
     end
-    local chestItems = chest.list()
 
-    for _, chestitem in pairs(chestItems) do
+    for _, chestitem in pairs(chest.list()) do
         for i, neededitem in pairs(missing) do
             if neededitem.count <= 0 then
                 table.remove(missing,i)
@@ -373,6 +387,8 @@ end
 return {
     fuelSlots = fuelSlots,
     blockSlots = blockSlots,
+    addMCNameSpace = addMCNameSpace,
+    removeMCNameSpace = removeMCNameSpace,
 
     getFuelSlot = getFuelSlot,
     getFuelChestposition = getFuelChestposition,
