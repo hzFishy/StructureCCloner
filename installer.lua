@@ -5,6 +5,7 @@ local files = {
   "StructureCCloner/modules/mapping/scan.lua",
   "StructureCCloner/modules/movement/init.lua",
   "StructureCCloner/modules/term/init.lua",
+  "StructureCCloner/modules/term/pretty.lua",
   "StructureCCloner/modules/utils/init.lua",
   "StructureCCloner/modules/utils/input.lua",
   "StructureCCloner/modules/external/init.lua",
